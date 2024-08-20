@@ -28,12 +28,17 @@ public class JwtService {
         .collect(Collectors
             .joining(" "));
 
+    var roles = authentication.getAuthorities().stream()
+        .map(GrantedAuthority::getAuthority)
+        .collect(Collectors.toList());
+
     JwtClaimsSet claims = JwtClaimsSet.builder()
         .issuer("spring-security-jwt")
         .issuedAt(now)
         .expiresAt(now.plusSeconds(expiry))
         .subject(authentication.getName())
         .claim("scope", scope)
+        .claim("roles", roles) // Add roles to the JWT
         .build();
 
     return encoder.encode(
