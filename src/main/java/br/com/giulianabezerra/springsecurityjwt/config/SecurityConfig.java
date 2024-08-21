@@ -3,6 +3,8 @@ package br.com.giulianabezerra.springsecurityjwt.config;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,6 +35,7 @@ public class SecurityConfig {
   private RSAPublicKey key;
   @Value("${jwt.private.key}")
   private RSAPrivateKey priv;
+  private static final Logger logger = LoggerFactory.getLogger(SecurityConfig.class);
 
   @Bean
   SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -40,12 +43,13 @@ public class SecurityConfig {
         .authorizeHttpRequests(
             auth -> auth
                 .requestMatchers("/authenticate").permitAll()
-                .requestMatchers("/admin").hasRole("ADMIN")
+                .requestMatchers("/admin").hasRole("read")
                 .anyRequest().authenticated())
         .httpBasic(Customizer.withDefaults())
         .oauth2ResourceServer(
             conf -> conf.jwt(
-                jwt -> jwt.decoder(jwtDecoder())
+                jwt -> jwt
+                    .decoder(jwtDecoder())
                     .jwtAuthenticationConverter(jwtAuthenticationConverter())));
     return http.build();
   }
