@@ -35,7 +35,6 @@ public class SecurityConfig {
   private RSAPublicKey key;
   @Value("${jwt.private.key}")
   private RSAPrivateKey priv;
-  private static final Logger logger = LoggerFactory.getLogger(SecurityConfig.class);
 
   @Bean
   SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -43,7 +42,7 @@ public class SecurityConfig {
         .authorizeHttpRequests(
             auth -> auth
                 .requestMatchers("/authenticate").permitAll()
-                .requestMatchers("/admin").hasRole("read")
+                .requestMatchers("/admin").hasRole("ADMIN")
                 .anyRequest().authenticated())
         .httpBasic(Customizer.withDefaults())
         .oauth2ResourceServer(
